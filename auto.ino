@@ -1,94 +1,157 @@
+#include <SPI.h>
+
 #include "rtd.h"
 #include "mpx5700.h"
 #include "Timer.h"
 #include "board.h"
-
+#include "disp.h"
 
 Timer t;  // Define Timer object
 mpx5700 mpx;
 
+uint8_t sw_p_status = 1;
+uint8_t sw_t_status = 1;
+uint8_t sw_s_status = 1;
 
+
+ void LD_TEST(void)
+ {
+
+  digitalWrite(water_status_led, HIGH);  
+  digitalWrite(drain_status_led, HIGH); 
+//
+  digitalWrite(bnd_s__led, HIGH);  
+  digitalWrite(vacuum_s_led, HIGH);  
+
+  digitalWrite(unwrapped_led, HIGH);  
+  digitalWrite(wrapped_led, HIGH); 
+  digitalWrite(prion_led, HIGH); 
+  digitalWrite(porous_led, HIGH); 
+//
+  digitalWrite(start_led, HIGH);  
+  digitalWrite(vacuum_led, HIGH); 
+  digitalWrite(serilize_led, HIGH); 
+  digitalWrite(dry_led, HIGH); 
+  digitalWrite(end_led, HIGH); 
+//
+  digitalWrite(t134_led, HIGH); 
+  digitalWrite(t121_led, HIGH); 
+//
+//
+  digitalWrite(WAT_VALVE, HIGH); 
+  digitalWrite(AIR_VALVE, HIGH); 
+  digitalWrite(EXST_VALVE, HIGH); 
+  digitalWrite(VACU_VALVE, HIGH); 
+//
+  digitalWrite(WAT_PUMP, HIGH); 
+  digitalWrite(VAC_PUMP, HIGH);  
+
+//  DDRK |= 0xFF;
+//PORTK |= 0xFF;
+//
+//
+//  DDRA |= 0xFF;
+//PORTA |= 0xFF;
+//
+//DDRA |= _BV(DDA7);
+//PORTA |= _BV(PORTA7);
+//
+//DDRJ |= _BV(DDJ7);
+//PORTJ |= _BV(PORTJ7);
+
+ }
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);  // Set Baudrate at 9600
+
+  initialize_lcd();
+  Disp_board_config();
   board_init();        // SET Direction all GPIO
+ LD_TEST();
+//  t.every(100, takeTempReading);   // Take Reading Every 100ms
+//  t.every(150, takePressReading);  // Take Reading Every 100ms
 
-  t.every(100, takeTempReading);   // Take Reading Every 100ms
-  t.every(150, takePressReading);  // Take Reading Every 100ms
+//  attachInterrupt(digitalPinToInterrupt(DIST_WATER_SENSE), water_level_dist, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(USE_WATER_SENSE), water_level_used, CHANGE);
 
-  attachInterrupt(digitalPinToInterrupt(DIST_WATER_SENSE), water_level_dist, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(USE_WATER_SENSE), water_level_used, CHANGE);
+  lcd1_temp(134.77);
+lcd2_press(-87.77);
+//lcd3_time_incr(1,30);
+delay(1000);
+ 
+ delay(1000);
 }
 
 void loop() {
 
-  t.update();  // Update Timer
+//  t.update();  // Update Timer
 uint8_t prgm_count = 0;
 uint8_t test_prgm_count = 5;
 uint8_t prgm_running = 0;
 
-sw_p_status = 0;
-sw_t_status = 0;
+//sw_p_status = 0;
+//sw_t_status = 0;
+
   // read the state of the pushbutton value:
   // sw_p_status = digitalRead(SW_program);
   // sw_s_status = digitalRead(SW_start);
   // sw_t_status = digitalRead(SW_test);
 
-  if ((digitalRead(SW_program) == 0) && (prgm_running == 0))
-   {
-   
-    if(prgm_count <= 5)
-      prgm_count++;
-    else
-      prgm_count = 0;
-    
-    sw_p_status = 1;
-    sw_t_status = 0;
-    program_status_led_glow(prgm_count);   
+//  if ((digitalRead(SW_program) == 0) && (prgm_running == 0))
+//   {
+//   
+//    if(prgm_count <= 5)
+//      prgm_count++;
+//    else
+//      prgm_count = 0;
+//    
+//    sw_p_status = 1;
+//    sw_t_status = 0;
+//    program_status_led_glow(prgm_count);   
+//
+//  } 
+//
+//  
+// if ((digitalRead(SW_test) == 0) && (prgm_running == 0))
+//  {    
+//
+//    if(test_prgm_count == 5)
+//      test_prgm_count = 6;
+//    else
+//      test_prgm_count = 5;
+//
+//    sw_p_status = 0;
+//    sw_t_status = 1;
+//    program_status_led_glow(prgm_count); 
 
-  } 
-
-  
- if ((digitalRead(SW_test) == 0) && (prgm_running == 0))
-  {    
-
-    if(test_prgm_count == 5)
-      test_prgm_count = 6;
-    else
-      test_prgm_count = 5;
-
-    sw_p_status = 0;
-    sw_t_status = 1;
-    program_status_led_glow(prgm_count); 
-
-  } 
-
-    
-  if (digitalRead(SW_start) == 0) 
-  {
-    
-
-    if(prgm_running)
-      {
-      prgm_running = 0;
-      // pause all items
-      
-      }
-
-    else
-    {
-      prgm_running = 1;
-
-      if(sw_p_status)
-        program_run(prgm_count);
-
-      if(sw_t_status)
-        program_run(test_prgm_count);
-
-    }
-
-  } 
+//  } 
+//
+//    
+//  if (digitalRead(SW_start) == 0) 
+//  {
+//    
+//
+//    if(prgm_running)
+//      {
+//      prgm_running = 0;
+//      // pause all items
+//      
+//      }
+//
+//    else
+//    {
+//      prgm_running = 1;
+//
+//      if(sw_p_status)
+//        program_run(prgm_count);
+//
+//      if(sw_t_status)
+//        program_run(test_prgm_count);
+//
+//    }
+//
+//  } 
 
   
 }
@@ -177,8 +240,9 @@ void door_status(void) {
 }
 
 void unwrapped_cycle()
-{
+{ 
 
+ 
 }
 void wrapped_cycle()
 {
@@ -209,36 +273,14 @@ void program_run(uint8_t num)
 {
    switch (num)
   {
-  case unwrapped:
-    unwrapped_cycle();
-    break;
-
-  case wrapped:  
-    wrapped_cycle();
-    break;
-
-  case prion: 
-    prion_cycle();
-    break;
-
-  case poros:  
-    poros_cycle();
-    break;
-
-  case all_prgrm: 
-    all_prgrm_cycle();
-    break;
-
-  case bnd_prgrm: 
-    bnd_prgrm_cycle();
-    break;
-
-  case vaccum_prgrm: 
-    vaccum_prgrm_cycle();
-    break;
-
-  default:
-    break;
+  case unwrapped: unwrapped_cycle();  break;
+  case wrapped: wrapped_cycle();  break;
+  case prion: prion_cycle(); break;
+  case poros:  poros_cycle();  break;
+  case all_prgrm: all_prgrm_cycle(); break;
+  case bnd_prgrm: bnd_prgrm_cycle(); break;
+  case vaccum_prgrm: vaccum_prgrm_cycle(); break;
+  default:  break;
   }
 }
 
